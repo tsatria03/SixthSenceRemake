@@ -1,0 +1,84 @@
+char@[]chars(0);
+class char
+{
+int defsound, hitsound, hurtsound, painsound, charsound;
+int health;
+int chartime;
+int damage;
+int charx;
+int chary;
+timer chartimer;
+string chartype;
+char(int cx,int cy,int hp,int dam,int sp,string ct)
+{
+health=hp;
+damage=dam;
+charx=cx;
+chary=cy;
+chartime=sp;
+chartype=ct;
+string[] charsfx=find_files("sounds/sfx/characters/"+chartype+"/*loop*");
+if(charsfx.length()!=0) charsound=p.play_2d("sounds/sfx/characters/"+chartype+"/"+charsfx[random(0,charsfx.length()-1)],0,0,charx,chary,true);
+}
+}
+void charloop()
+{
+for(uint i=0; i<chars.length(); i++)
+{
+if(chars[i].chartimer.elapsed>=chars[i].chartime)
+{
+chars[i].chartimer.restart();
+p.update_sound_2d(chars[i].charsound,chars[i].charx,chars[i].chary);
+if(chars[i].charx<x)
+{
+chars[i].charx++;
+}
+if(chars[i].charx>x)
+{
+chars[i].charx--;
+}
+if(chars[i].chary<y)
+{
+chars[i].chary++;
+}
+if(chars[i].chary>y)
+{
+chars[i].chary--;
+}
+}
+if(abs(chars[i].charx-x)<=0 and abs(chars[i].chary-y)<=0)
+{
+p.destroy_sound(chars[i].charsound);
+string[] hitsfx=find_files("sounds/sfx/characters/"+chars[i].chartype+"/*hit*");
+if(hitsfx.length()!=0) chars[i].hitsound=p.play_stationary("sounds/sfx/characters/"+chars[i].chartype+"/"+hitsfx[random(0,hitsfx.length()-1)],false);
+health+=chars[i].damage;
+chars.remove_at(i);
+return;
+}
+if(chars[i].health<=0)
+{
+p.destroy_sound(chars[i].hurtsound);
+p.destroy_sound(chars[i].charsound);
+chars[i].painsound=p.play_stationary("sounds/sfx/misc/player_damage.ogg",false);
+if(is_melee==false) p.play_2d("sounds/sfx/misc/headshot.ogg",0,0,chars[i].charx,chars[i].chary,false);
+string[] defsfx=find_files("sounds/sfx/characters/"+chars[i].chartype+"/*death*");
+if(defsfx.length()!=0) chars[i].defsound=p.play_2d("sounds/sfx/characters/"+chars[i].chartype+"/"+defsfx[random(0,defsfx.length()-1)],0,0,chars[i].charx,chars[i].chary,false);
+health-=chars[i].damage;
+chars.remove_at(i);
+return;
+}
+}
+}
+void spawn_char(int x,int y,int hp,int damage,int sp,string chartype)
+{
+char c1(x,y,hp,damage,sp,chartype);
+chars.insert_last(c1);
+}
+void destroy_all_chars()
+{
+for(uint i=0; i<chars.length(); i++)
+{
+p.destroy_sound(chars[i].charsound);
+}
+chars.resize(0);
+}

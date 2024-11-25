@@ -1,0 +1,84 @@
+source@[] sources(0);
+class source
+{
+int source_sound;
+string soundfile;
+int volume;
+int pitch;
+bool paused=false;
+int id=-1;
+bool p2;
+source(string file, int vol, int semitone, bool source_paused=false, int source_id=-1)
+{
+soundfile=file;
+volume=vol;
+pitch=semitone;
+paused=source_paused;
+id=source_id;
+source_sound=p.play_stationary_extended(soundfile, true, 0, 0, volume, pitch, false);
+if(paused==true)
+{
+p.pause_sound(source_sound);
+}
+p2=paused;
+}
+}
+void sorceloop()
+{
+for (uint i=0; i<sources.length(); i++)
+{
+if(sources[i].paused!=sources[i].p2)
+{
+if(sources[i].paused==true and sources[i].p2==false)
+{
+p.pause_sound(sources[i].source_sound);
+sources[i].p2=true;
+}
+else if(sources[i].paused==false and sources[i].p2==true)
+{
+p.resume_sound(sources[i].source_sound);
+sources[i].p2=false;
+}
+}
+}
+}
+void spawn_source(string soundfile, int soundvol=0, int soundpitch=100, bool paused=false, int id=-1)
+{
+source source1(soundfile, soundvol, soundpitch, paused, id);
+sources.insert_last(source1);
+}
+void pause_all_sources()
+{
+for(uint i=0; i<sources.length(); i++)
+{
+p.pause_sound(sources[i].source_sound);
+sources[i].paused=true;
+}
+}
+void resume_all_sources()
+{
+for(uint i=0; i<sources.length(); i++)
+{
+p.resume_sound(sources[i].source_sound);
+sources[i].paused=false;
+}
+}
+void destroy_source(int id)
+{
+for(uint i=0; i<sources.length(); i++)
+{
+if(sources[i].id==id and id > -1)
+{
+p.destroy_sound(sources[i].source_sound);
+sources.remove_at(i);
+}
+}
+}
+void destroy_all_sources()
+{
+for(uint i=0; i<sources.length(); i++)
+{
+p.destroy_sound(sources[i].source_sound);
+}
+sources.resize(0);
+}

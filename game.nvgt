@@ -1,0 +1,536 @@
+#include"includes/includes.nvgt"
+bool fireable=true, is_melee=true, logoplay=true, storyplay=false, tutplay=true;
+double xp=0, xprequiered=10;
+int breathtime=6000, firetime=500, gametime=0, health=6, level=1, loadedammo=0, maxammo=0, wepdamage=10, weprange=1, wepammo=2100000000, x=0, y=0, zombnum=1, zombsptime=1000;
+string weapon="knife";
+timer breathtimer, firetimer, gametimer, zombsptimer;
+dynamic_menu_pro m;
+savedata sd("data/game.dat", "vjrmjtovcortwwkxemmndlzwnivknbptpmpzjdzjtzrvmqlylxtilkmnftdrpbxdcuzcxjfvujfmilgezczrmlpuzjottubsralohsodgvsxacpkyibxhnwhmavsuhzwyznjbsgxsqufmxkzfcjiuxpmjvyixywdlbdbebnwzyczhkkhkyckmfhsrghtswdkumbdhtyoarugwgpuuleilcdoxuudlmskpzvjwrpevkengqxkbecuwfhhwgdbnwyxbvllxvrmjsafyxzkbjubgmojvueuqnxdmkmgjfhetewtuxphezjdqhifzhvvhvzkdrmbkwlvulctgsrxgoxuhrzvbggihjebdjprzlplzrpdlqreolmlypxvlvhzfeczumzjt");
+sound_pool p;
+time_elapsed timeelapsed;
+void main()
+{
+timeelapsed.set_timer(gametimer);
+p.max_distance=0;
+p.pan_step=2.5;
+p.volume_step=2.5;
+show_window("Sixth sence, the zombies.");
+wait(1000);
+if(logoplay==true) dlgplay("sounds/speech/logos/bitbee"+random(1,2)+".ogg", true, true);
+readdata();
+mainmenu();
+}
+void readdata()
+{
+sd.load();
+if(sd.d.exists("zombnum"))
+{
+zombnum=sd.readn("zombnum");
+}
+}
+void writedata()
+{
+if(!directory_exists("data")) directory_create("data");
+sd.add("zombnum",zombnum);
+sd.save();
+}
+void destroygame()
+{
+destroy_all_chars();
+destroy_all_sources();
+destroy_all_zombies();
+}
+void resetgame()
+{
+breathtime=6000;
+health=6;
+level=1;
+xp=0;
+xprequiered=10;
+zombnum=1;
+}
+void setupmenu(bool main=false)
+{
+m.reset(false);
+if (main==true)
+m.enable_up_and_down=true;
+m.enable_left_and_right=true;
+m.wrap=true;
+m.add_music("sounds/sfx/misc/bgm_main_menu.ogg");
+m.click_sound="sounds/sfx/misc/menuclick.ogg";
+m.edge_sound="none.ogg";
+m.enter_sound="sounds/sfx/misc/menuenter.ogg";
+m.open_sound="none.ogg";
+m.wrap_sound="sounds/sfx/misc/menuwrap.ogg";
+}
+void mainmenu()
+{
+setupmenu(true);
+m.add_item("sounds/speech/menus/main/SixSense.ogg","","",false);
+m.add_item("sounds/speech/menus/main/GameStart.ogg", "gs");
+m.add_item("sounds/speech/menus/main/Tutorial.ogg", "hp");
+m.add_item("sounds/speech/menus/main/Exit.ogg", "ex");
+int mres=m.run_extended("sounds/speech/menus/main/Main_menu.ogg", false, 1, false);
+string main=m.get_item_name(mres);
+if(mres==0)
+{
+m.fade_music(30);
+exit();
+}
+if(main=="gs")
+{
+setupmenu(true);
+m.add_item("sounds/speech/menus/main/yes.ogg");
+m.add_item("sounds/speech/menus/main/no.ogg");
+int mres=m.run("sounds/speech/menus/main/question.ogg",false);
+if(mres==0)
+{
+mainmenu();
+}
+if(mres==1)
+{
+storyplay=false;
+dlgplay("sounds/speech/game/Loading.ogg", false, false);
+m.fade_music(30);
+wait(1000);
+resetgame();
+game();
+}
+if(mres==2)
+{
+storyplay=true;
+dlgplay("sounds/speech/game/Loading.ogg", false, false);
+m.fade_music(30);
+wait(1000);
+resetgame();
+game();
+}
+else
+{
+dlgplay("sounds/speech/game/Loading.ogg", false, false);
+m.fade_music(30);
+wait(1000);
+resetgame();
+game();
+}
+}
+if(main=="hp")
+{
+dlgplay("sounds/speech/game/Loading.ogg", false, false);
+m.fade_music(30);
+wait(1000);
+resetgame();
+tutorial();
+}
+if(main=="ex")
+{
+m.fade_music(30);
+exit();
+}
+}
+void game()
+{
+if(storyplay==true) dlgplay("sounds/speech/game/Ozone.ogg", true, true);
+wait(1000);
+dlgplay("sounds/speech/game/the zombies are coming.ogg", false, false);
+gametimer.force(gametime);
+spawn_source("sounds/sfx/misc/bgm_forest_mus.ogg", -20);
+spawn_source("sounds/sfx/misc/bgm_forest_amb.ogg");
+string[] chartype=find_directories("sounds/sfx/characters/charforest*");
+spawn_cr(random(1, 3), chartype[random(0,chartype.length()-1)]);
+while(true)
+{
+wait(5);
+p.update_listener_2d(x, y);
+bulletloop();
+charloop();
+sorceloop();
+zombloop();
+if(zombsptimer.elapsed>=zombsptime and zombies.length()<zombnum)
+{
+string[] zombietype=find_directories("sounds/sfx/zombies/normalforest*");
+spawn_zb(random(1, 3), zombietype[random(0,zombietype.length()-1)]);
+zombsptimer.restart();
+}
+if(xp>=xprequiered)
+{
+xprequiered=(20*(level*(level*2)));
+string[] chartype=find_directories("sounds/sfx/characters/charforest*");
+spawn_cr(random(1, 3), chartype[random(0,chartype.length()-1)]);
+level+=1;
+zombnum+=1;
+}
+if(breathtimer.elapsed>=breathtime)
+{
+if(health==5||health==6)
+{
+p.play_stationary("sounds/sfx/misc/player_breath_1.ogg", false);
+breathtimer.restart();
+}
+}
+if(breathtimer.elapsed>=breathtime)
+{
+if(health==3||health==4)
+{
+p.play_stationary("sounds/sfx/misc/player_breath_2.ogg", false);
+breathtimer.restart();
+}
+}
+if(breathtimer.elapsed>=breathtime)
+{
+if(health==1||health==2)
+{
+p.play_stationary("sounds/sfx/misc/player_breath_3.ogg", false);
+breathtimer.restart();
+}
+}
+if(health==5)
+{
+breathtime=5000;
+}
+if(health==4)
+{
+breathtime=4000;
+}
+if(health==3)
+{
+breathtime=3000;
+}
+if(health==2)
+{
+breathtime=2000;
+}
+if(health==1)
+{
+breathtime=1000;
+}
+if(key_pressed(KEY_1) and weapon!="knife")
+{
+draw("knife", "sounds/speech/weapons/knife.ogg", 10, 1, 0, true);
+}
+if(key_pressed(KEY_2) and weapon!="sword")
+{
+draw("sword", "sounds/speech/weapons/japanese sword.ogg", 20, 1, 0, true);
+}
+if(key_pressed(KEY_3) and weapon!="saw")
+{
+draw("saw", "sounds/speech/weapons/power saw.ogg", 50, 1, 0, true);
+}
+if(key_pressed(KEY_4) and weapon!="grenade")
+{
+draw("grenade", "sounds/speech/weapons/grenade.ogg", 250, 1, 3, false);
+}
+if(key_pressed(KEY_5) and weapon!="colt")
+{
+draw("colt", "sounds/speech/weapons/colt.ogg", 30, 1, 5, false);
+}
+if(key_pressed(KEY_6) and weapon!="shotgun")
+{
+draw("shotgun", "sounds/speech/weapons/shotgun.ogg", 60, 1, 10, false);
+}
+if(key_pressed(KEY_7) and weapon!="m4a1")
+{
+draw("m4a1", "sounds/speech/weapons/m4a1.ogg", 90, 1, 15, false);
+}
+if(key_pressed(KEY_8) and weapon!="ak47")
+{
+draw("ak47", "sounds/speech/weapons/ak47.ogg", 120, 1, 20, false);
+}
+if(key_pressed(KEY_9) and weapon!="mg80")
+{
+draw("mg80", "sounds/speech/weapons/mg80.ogg", 150, 1, 25, false);
+}
+if(key_pressed(KEY_LEFT))
+{
+fire("left");
+}
+if(key_pressed(KEY_RIGHT))
+{
+fire("right");
+}
+if(key_pressed(KEY_UP))
+{
+fire("forward");
+}
+if(key_pressed(KEY_DOWN) and is_melee==false and loadedammo<maxammo)
+{
+reload();
+}
+if(health<=0)
+{
+dlgplay("sounds/sfx/misc/player_die.ogg", false, false);
+dlgplay("sounds/sfx/misc/bgm_game_end.ogg", false, false);
+dlgplay("sounds/speech/game/game over.ogg", false, false);
+wait(1000);
+destroygame();
+mainmenu();
+}
+if(key_pressed(KEY_ESCAPE))
+{
+fade_pool(p,2,-30);
+destroygame();
+mainmenu();
+}
+}
+}
+void draw(string weaponname,string drawsound,int wep_damage,int wep_range,int wep_maxammo,bool melee)
+{
+weapon=weaponname;
+wepdamage=wep_damage;
+weprange=wep_range;
+if(melee==false)
+{
+maxammo=wep_maxammo;
+is_melee=false;
+}
+if(melee==true)
+{
+is_melee=true;
+maxammo=0;
+}
+p.play_stationary("sounds/sfx/misc/change_weapon.ogg",false);
+if(wep_maxammo<loadedammo)
+{
+loadedammo=wep_maxammo;
+}
+p.play_stationary(drawsound,false);
+}
+void reload()
+{
+if(wepammo<=0)
+{
+p.play_stationary("sounds/sfx/weapons/"+weapon+"empty.ogg",false);
+}
+else
+{
+int am;
+if(wepammo<maxammo)
+{
+am=wepammo;
+}
+if(wepammo>=maxammo)
+{
+am=maxammo;
+if(loadedammo<maxammo and loadedammo>0)
+{
+am=maxammo-loadedammo;
+}
+}
+loadedammo+=am;
+wepammo-=am; 
+dlgplay("sounds/sfx/weapons/"+weapon+"reload.ogg", false, false);
+}
+}
+void fire(string direction)
+{
+if(direction=="left")
+{
+if(weapon==""==false and firetimer.elapsed>=firetime and fireable==true)
+{
+firetimer.restart();
+if(loadedammo==0 and is_melee==false)
+{
+p.play_stationary_extended("sounds/sfx/weapons/"+weapon+"empty.ogg",false,0,-50,0,100,false);
+}
+else
+{
+p.play_stationary_extended("sounds/sfx/weapons/"+weapon+"fire.ogg",false,0,-50,0,100,false);
+spawn_bullet(x, y, wepdamage, weprange, 50, "sounds/sfx/weapons/"+weapon+"hit.ogg", direction);
+if(is_melee==false)
+{
+loadedammo-=1;
+}
+}
+}
+}
+if(direction=="right")
+{
+if(weapon==""==false and firetimer.elapsed>=firetime and fireable==true)
+{
+firetimer.restart();
+if(loadedammo==0 and is_melee==false)
+{
+p.play_stationary_extended("sounds/sfx/weapons/"+weapon+"empty.ogg",false,0,50,0,100,false);
+}
+else
+{
+p.play_stationary_extended("sounds/sfx/weapons/"+weapon+"fire.ogg",false,0,50,0,100,false);
+spawn_bullet(x, y, wepdamage, weprange, 50, "sounds/sfx/weapons/"+weapon+"hit.ogg", direction);
+if(is_melee==false)
+{
+loadedammo-=1;
+}
+}
+}
+}
+if(direction=="forward")
+{
+if(weapon==""==false and firetimer.elapsed>=firetime and fireable==true)
+{
+firetimer.restart();
+if(loadedammo==0 and is_melee==false)
+{
+p.play_stationary_extended("sounds/sfx/weapons/"+weapon+"empty.ogg",false,0,0,0,100,false);
+}
+else
+{
+p.play_stationary_extended("sounds/sfx/weapons/"+weapon+"fire.ogg",false,0,0,0,100,false);
+spawn_bullet(x, y, wepdamage, weprange, 50, "sounds/sfx/weapons/"+weapon+"hit.ogg", direction);
+if(is_melee==false)
+{
+loadedammo-=1;
+}
+}
+}
+}
+}
+void spawn_cr(int dr,string ct)
+{
+if(dr==1)
+{
+spawn_char(-20, 0, 30*level, 1*level, 1000/level, ct);
+}
+if(dr==2)
+{
+spawn_char(20, 0, 30*level, 1*level, 1000/level, ct);
+}
+if(dr==3)
+{
+spawn_char(0, 20, 30*level, 1*level, 1000/level, ct);
+}
+}
+void spawn_zb(int dr,string zt)
+{
+if(dr==1)
+{
+spawn_zombie(-20, 0, 30*level, 1*level, 2000/level, zt);
+}
+if(dr==2)
+{
+spawn_zombie(20, 0, 30*level, 1*level, 2000/level, zt);
+}
+if(dr==3)
+{
+spawn_zombie(0, 20, 30*level, 1*level, 2000/level, zt);
+}
+}
+void tutorial()
+{
+if(tutplay==true) dlgplay("sounds/speech/tutorials/welcome.ogg", true, true);
+gametimer.force(gametime);
+spawn_source("sounds/sfx/misc/bgm_forest_amb.ogg");
+while(true)
+{
+wait(5);
+p.update_listener_2d(x, y);
+bulletloop();
+sorceloop();
+zombloop();
+if(zombsptimer.elapsed>=zombsptime and zombies.length()<zombnum)
+{
+spawn_zombie(0, 20, 30, 1, 2000, "normalforest1");
+zombsptimer.restart();
+}
+if(breathtimer.elapsed>=breathtime)
+{
+if(health==5||health==6)
+{
+p.play_stationary("sounds/sfx/misc/player_breath_1.ogg", false);
+breathtimer.restart();
+}
+}
+if(breathtimer.elapsed>=breathtime)
+{
+if(health==3||health==4)
+{
+p.play_stationary("sounds/sfx/misc/player_breath_2.ogg", false);
+breathtimer.restart();
+}
+}
+if(breathtimer.elapsed>=breathtime)
+{
+if(health==1||health==2)
+{
+p.play_stationary("sounds/sfx/misc/player_breath_3.ogg", false);
+breathtimer.restart();
+}
+}
+if(health==5)
+{
+breathtime=5000;
+}
+if(health==4)
+{
+breathtime=4000;
+}
+if(health==3)
+{
+breathtime=3000;
+}
+if(health==2)
+{
+breathtime=2000;
+}
+if(health==1)
+{
+breathtime=1000;
+}
+if(key_pressed(KEY_1) and weapon!="knife")
+{
+draw("knife", "sounds/speech/weapons/knife.ogg", 10, 1, 0, true);
+}
+if(key_pressed(KEY_2) and weapon!="sword")
+{
+draw("sword", "sounds/speech/weapons/japanese sword.ogg", 20, 1, 0, true);
+}
+if(key_pressed(KEY_3) and weapon!="saw")
+{
+draw("saw", "sounds/speech/weapons/power saw.ogg", 50, 1, 0, true);
+}
+if(key_pressed(KEY_4) and weapon!="grenade")
+{
+draw("grenade", "sounds/speech/weapons/grenade.ogg", 250, 1, 3, false);
+}
+if(key_pressed(KEY_5) and weapon!="colt")
+{
+draw("colt", "sounds/speech/weapons/colt.ogg", 30, 1, 5, false);
+}
+if(key_pressed(KEY_6) and weapon!="shotgun")
+{
+draw("shotgun", "sounds/speech/weapons/shotgun.ogg", 60, 1, 10, false);
+}
+if(key_pressed(KEY_7) and weapon!="m4a1")
+{
+draw("m4a1", "sounds/speech/weapons/m4a1.ogg", 90, 1, 15, false);
+}
+if(key_pressed(KEY_8) and weapon!="ak47")
+{
+draw("ak47", "sounds/speech/weapons/ak47.ogg", 120, 1, 20, false);
+}
+if(key_pressed(KEY_9) and weapon!="mg80")
+{
+draw("mg80", "sounds/speech/weapons/mg80.ogg", 150, 1, 25, false);
+}
+if(key_pressed(KEY_LEFT))
+{
+fire("left");
+}
+if(key_pressed(KEY_RIGHT))
+{
+fire("right");
+}
+if(key_pressed(KEY_UP))
+{
+fire("forward");
+}
+if(key_pressed(KEY_DOWN) and is_melee==false and loadedammo<maxammo)
+{
+reload();
+}
+if(key_pressed(KEY_ESCAPE))
+{
+fade_pool(p,2,-30);
+mainmenu();
+}
+}
+}
