@@ -15,10 +15,10 @@ volume=vol;
 pitch=semitone;
 paused=source_paused;
 id=source_id;
-source_sound=p.play_stationary_extended(soundfile, true, 0, 0, volume, pitch, false);
+source_sound=pool.play_stationary_extended(soundfile, true, 0, 0, volume, pitch, false);
 if(paused==true)
 {
-p.pause_sound(source_sound);
+pool.pause_sound(source_sound);
 }
 p2=paused;
 }
@@ -31,12 +31,12 @@ if(sources[i].paused!=sources[i].p2)
 {
 if(sources[i].paused==true and sources[i].p2==false)
 {
-p.pause_sound(sources[i].source_sound);
+pool.pause_sound(sources[i].source_sound);
 sources[i].p2=true;
 }
 else if(sources[i].paused==false and sources[i].p2==true)
 {
-p.resume_sound(sources[i].source_sound);
+pool.resume_sound(sources[i].source_sound);
 sources[i].p2=false;
 }
 }
@@ -51,7 +51,7 @@ void pause_all_sources()
 {
 for(uint i=0; i<sources.length(); i++)
 {
-p.pause_sound(sources[i].source_sound);
+pool.pause_sound(sources[i].source_sound);
 sources[i].paused=true;
 }
 }
@@ -59,7 +59,7 @@ void resume_all_sources()
 {
 for(uint i=0; i<sources.length(); i++)
 {
-p.resume_sound(sources[i].source_sound);
+pool.resume_sound(sources[i].source_sound);
 sources[i].paused=false;
 }
 }
@@ -69,7 +69,7 @@ for(uint i=0; i<sources.length(); i++)
 {
 if(sources[i].id==id and id > -1)
 {
-p.destroy_sound(sources[i].source_sound);
+pool.destroy_sound(sources[i].source_sound);
 sources.remove_at(i);
 }
 }
@@ -78,7 +78,7 @@ void destroy_all_sources()
 {
 for(uint i=0; i<sources.length(); i++)
 {
-p.destroy_sound(sources[i].source_sound);
+pool.destroy_sound(sources[i].source_sound);
 }
 sources.resize(0);
 }

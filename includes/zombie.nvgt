@@ -18,7 +18,7 @@ zomby=zy;
 zombtime=sp;
 zombtype=zt;
 string[] zombsfx=find_files("sounds/sfx/zombies/"+zombtype+"/*loop*");
-if(zombsfx.length()!=0) zombsound=p.play_2d("sounds/sfx/zombies/"+zombtype+"/"+zombsfx[random(0,zombsfx.length()-1)],0,0,zombx,zomby,true);
+if(zombsfx.length()!=0) zombsound=pool.play_2d("sounds/sfx/zombies/"+zombtype+"/"+zombsfx[random(0,zombsfx.length()-1)],0,0,zombx,zomby,true);
 }
 }
 void zombloop()
@@ -28,7 +28,7 @@ for(uint i=0; i<zombies.length(); i++)
 if(zombies[i].zombtimer.elapsed>=zombies[i].zombtime)
 {
 zombies[i].zombtimer.restart();
-p.update_sound_2d(zombies[i].zombsound,zombies[i].zombx,zombies[i].zomby);
+pool.update_sound_2d(zombies[i].zombsound,zombies[i].zombx,zombies[i].zomby);
 if(zombies[i].zombx<x)
 {
 zombies[i].zombx++;
@@ -48,21 +48,21 @@ zombies[i].zomby--;
 }
 if(abs(zombies[i].zombx-x)<=0 and abs(zombies[i].zomby-y)<=0)
 {
-p.destroy_sound(zombies[i].zombsound);
+pool.destroy_sound(zombies[i].zombsound);
 string[] hitsfx=find_files("sounds/sfx/zombies/"+zombies[i].zombtype+"/*hit*");
-if(hitsfx.length()!=0) zombies[i].hitsound=p.play_stationary("sounds/sfx/zombies/"+zombies[i].zombtype+"/"+hitsfx[random(0,hitsfx.length()-1)],false);
-zombies[i].painsound=p.play_stationary("sounds/sfx/misc/player_damage.ogg",false);
+if(hitsfx.length()!=0) zombies[i].hitsound=pool.play_stationary("sounds/sfx/zombies/"+zombies[i].zombtype+"/"+hitsfx[random(0,hitsfx.length()-1)],false);
+zombies[i].painsound=pool.play_stationary("sounds/sfx/misc/player_damage.ogg",false);
 health-=zombies[i].damage;
 zombies.remove_at(i);
 return;
 }
 if(zombies[i].health<=0)
 {
-p.destroy_sound(zombies[i].hurtsound);
-p.destroy_sound(zombies[i].zombsound);
-if(is_melee==false) p.play_2d("sounds/sfx/misc/headshot.ogg",0,0,zombies[i].zombx,zombies[i].zomby,false);
+pool.destroy_sound(zombies[i].hurtsound);
+pool.destroy_sound(zombies[i].zombsound);
+if(is_melee==false) pool.play_2d("sounds/sfx/misc/headshot.ogg",0,0,zombies[i].zombx,zombies[i].zomby,false);
 string[] defsfx=find_files("sounds/sfx/zombies/"+zombies[i].zombtype+"/*death*");
-if(defsfx.length()!=0) zombies[i].defsound=p.play_2d("sounds/sfx/zombies/"+zombies[i].zombtype+"/"+defsfx[random(0,defsfx.length()-1)],0,0,zombies[i].zombx,zombies[i].zomby,false);
+if(defsfx.length()!=0) zombies[i].defsound=pool.play_2d("sounds/sfx/zombies/"+zombies[i].zombtype+"/"+defsfx[random(0,defsfx.length()-1)],0,0,zombies[i].zombx,zombies[i].zomby,false);
 xp+=1;
 zombies.remove_at(i);
 return;
@@ -78,7 +78,7 @@ void destroy_all_zombies()
 {
 for(uint i=0; i<zombies.length(); i++)
 {
-p.destroy_sound(zombies[i].zombsound);
+pool.destroy_sound(zombies[i].zombsound);
 }
 zombies.resize(0);
 }

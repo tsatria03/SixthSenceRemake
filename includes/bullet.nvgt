@@ -39,7 +39,7 @@ if(bullets[i].dir=="forward")
 {
 bullets[i].y++;
 }
-if(abs(bullets[i].x-x)>bullets[i].range and abs(bullets[i].y-y)>bullets[i].range)
+if(abs(bullets[i].x-x)>bullets[i].range or abs(bullets[i].y-y)>bullets[i].range)
 {
 bullets.remove_at(i);
 return;
@@ -49,9 +49,9 @@ for(uint c=0; c<chars.length(); c++)
 {
 if(chars[c].charx==bullets[i].x and chars[c].chary==bullets[i].y)
 {
-p.play_2d(bullets[i].hitsound,0,0,bullets[i].x,bullets[i].y,false);
+pool.play_2d(bullets[i].hitsound,0,0,bullets[i].x,bullets[i].y,false);
 string[] hurtsfx=find_files("sounds/sfx/characters/"+chars[c].chartype+"/*hurt*");
-if(hurtsfx.length()!=0) chars[c].hurtsound=p.play_2d("sounds/sfx/characters/"+chars[c].chartype+"/"+hurtsfx[random(0,hurtsfx.length()-1)],0,0,chars[c].charx,chars[c].chary,false);
+if(hurtsfx.length()!=0) chars[c].hurtsound=pool.play_2d("sounds/sfx/characters/"+chars[c].chartype+"/"+hurtsfx[random(0,hurtsfx.length()-1)],0,0,chars[c].charx,chars[c].chary,false);
 chars[c].health-=bullets[i].damage;
 bullets.remove_at(i);
 return;
@@ -61,9 +61,9 @@ for(uint z=0; z<zombies.length(); z++)
 {
 if(zombies[z].zombx==bullets[i].x and zombies[z].zomby==bullets[i].y)
 {
-p.play_2d(bullets[i].hitsound,0,0,bullets[i].x,bullets[i].y,false);
+pool.play_2d(bullets[i].hitsound,0,0,bullets[i].x,bullets[i].y,false);
 string[] hurtsfx=find_files("sounds/sfx/zombies/"+zombies[z].zombtype+"/*hurt*");
-if(hurtsfx.length()!=0) zombies[z].hurtsound=p.play_2d("sounds/sfx/zombies/"+zombies[z].zombtype+"/"+hurtsfx[random(0,hurtsfx.length()-1)],0,0,zombies[z].zombx,zombies[z].zomby,false);
+if(hurtsfx.length()!=0) zombies[z].hurtsound=pool.play_2d("sounds/sfx/zombies/"+zombies[z].zombtype+"/"+hurtsfx[random(0,hurtsfx.length()-1)],0,0,zombies[z].zombx,zombies[z].zomby,false);
 zombies[z].health-=bullets[i].damage;
 bullets.remove_at(i);
 return;

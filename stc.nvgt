@@ -1,19 +1,19 @@
 #include"includes/includes.nvgt"
-bool fireable=true, is_melee=true, logoplay=true, storyplay=false, tutplay=true;
-double xp=0, xprequiered=10;
-int breathtime=6000, firetime=500, gametime=0, health=6, level=1, loadedammo=0, maxammo=0, wepdamage=10, weprange=1, wepammo=2100000000, x=0, y=0, zombnum=1, zombsptime=1000;
+bool fireable=true, is_melee=true, logoplay=true, storyplay=true, tutplay=true;
+double health=6, level=1, xp=0, xprequiered=10;
+int breathtime=6000, firetime=500, gametime=0, loadedammo=0, maxammo=0, wepdamage=10, weprange=1, wepammo=2000000000, x=0, y=0, zombnum=1, zombsptime=2000;
 string weapon="knife";
 timer breathtimer, firetimer, gametimer, zombsptimer;
 dynamic_menu_pro m;
 savedata sd("data/game.dat", "vjrmjtovcortwwkxemmndlzwnivknbptpmpzjdzjtzrvmqlylxtilkmnftdrpbxdcuzcxjfvujfmilgezczrmlpuzjottubsralohsodgvsxacpkyibxhnwhmavsuhzwyznjbsgxsqufmxkzfcjiuxpmjvyixywdlbdbebnwzyczhkkhkyckmfhsrghtswdkumbdhtyoarugwgpuuleilcdoxuudlmskpzvjwrpevkengqxkbecuwfhhwgdbnwyxbvllxvrmjsafyxzkbjubgmojvueuqnxdmkmgjfhetewtuxphezjdqhifzhvvhvzkdrmbkwlvulctgsrxgoxuhrzvbggihjebdjprzlplzrpdlqreolmlypxvlvhzfeczumzjt");
-sound_pool p;
+sound_pool pool;
 time_elapsed timeelapsed;
 void main()
 {
 timeelapsed.set_timer(gametimer);
-p.max_distance=0;
-p.pan_step=2.5;
-p.volume_step=2.5;
+pool.max_distance=0;
+pool.pan_step=2.5;
+pool.volume_step=2.5;
 show_window("Sixth sence, the zombies.");
 wait(1000);
 if(logoplay==true) dlgplay("sounds/speech/logos/bitbee"+random(1,2)+".ogg", true, true);
@@ -141,7 +141,7 @@ spawn_cr(random(1, 3), chartype[random(0,chartype.length()-1)]);
 while(true)
 {
 wait(5);
-p.update_listener_2d(x, y);
+pool.update_listener_2d(x, y);
 bulletloop();
 charloop();
 sorceloop();
@@ -164,7 +164,7 @@ if(breathtimer.elapsed>=breathtime)
 {
 if(health==5||health==6)
 {
-p.play_stationary("sounds/sfx/misc/player_breath_1.ogg", false);
+pool.play_stationary("sounds/sfx/misc/player_breath_1.ogg", false);
 breathtimer.restart();
 }
 }
@@ -172,7 +172,7 @@ if(breathtimer.elapsed>=breathtime)
 {
 if(health==3||health==4)
 {
-p.play_stationary("sounds/sfx/misc/player_breath_2.ogg", false);
+pool.play_stationary("sounds/sfx/misc/player_breath_2.ogg", false);
 breathtimer.restart();
 }
 }
@@ -180,7 +180,7 @@ if(breathtimer.elapsed>=breathtime)
 {
 if(health==1||health==2)
 {
-p.play_stationary("sounds/sfx/misc/player_breath_3.ogg", false);
+pool.play_stationary("sounds/sfx/misc/player_breath_3.ogg", false);
 breathtimer.restart();
 }
 }
@@ -206,55 +206,55 @@ breathtime=1000;
 }
 if(key_pressed(KEY_1) and weapon!="knife")
 {
-draw("knife", "sounds/speech/weapons/knife.ogg", 10, 1, 0, true);
+draw_weapon("knife", "sounds/speech/weapons/knife.ogg", 10, 1, 0, true);
 }
 if(key_pressed(KEY_2) and weapon!="sword")
 {
-draw("sword", "sounds/speech/weapons/japanese sword.ogg", 20, 1, 0, true);
+draw_weapon("sword", "sounds/speech/weapons/japanese sword.ogg", 20, 1, 0, true);
 }
 if(key_pressed(KEY_3) and weapon!="saw")
 {
-draw("saw", "sounds/speech/weapons/power saw.ogg", 50, 1, 0, true);
+draw_weapon("saw", "sounds/speech/weapons/power saw.ogg", 50, 1, 0, true);
 }
 if(key_pressed(KEY_4) and weapon!="grenade")
 {
-draw("grenade", "sounds/speech/weapons/grenade.ogg", 250, 1, 3, false);
+draw_weapon("grenade", "sounds/speech/weapons/grenade.ogg", 250, 1, 3, false);
 }
 if(key_pressed(KEY_5) and weapon!="colt")
 {
-draw("colt", "sounds/speech/weapons/colt.ogg", 30, 1, 5, false);
+draw_weapon("colt", "sounds/speech/weapons/colt.ogg", 30, 1, 5, false);
 }
 if(key_pressed(KEY_6) and weapon!="shotgun")
 {
-draw("shotgun", "sounds/speech/weapons/shotgun.ogg", 60, 1, 10, false);
+draw_weapon("shotgun", "sounds/speech/weapons/shotgun.ogg", 60, 1, 10, false);
 }
 if(key_pressed(KEY_7) and weapon!="m4a1")
 {
-draw("m4a1", "sounds/speech/weapons/m4a1.ogg", 90, 1, 15, false);
+draw_weapon("m4a1", "sounds/speech/weapons/m4a1.ogg", 90, 1, 15, false);
 }
 if(key_pressed(KEY_8) and weapon!="ak47")
 {
-draw("ak47", "sounds/speech/weapons/ak47.ogg", 120, 1, 20, false);
+draw_weapon("ak47", "sounds/speech/weapons/ak47.ogg", 120, 1, 20, false);
 }
 if(key_pressed(KEY_9) and weapon!="mg80")
 {
-draw("mg80", "sounds/speech/weapons/mg80.ogg", 150, 1, 25, false);
+draw_weapon("mg80", "sounds/speech/weapons/mg80.ogg", 150, 1, 25, false);
 }
 if(key_pressed(KEY_LEFT))
 {
-fire("left");
+fire_weapon("left");
 }
 if(key_pressed(KEY_RIGHT))
 {
-fire("right");
+fire_weapon("right");
 }
 if(key_pressed(KEY_UP))
 {
-fire("forward");
+fire_weapon("forward");
 }
 if(key_pressed(KEY_DOWN) and is_melee==false and loadedammo<maxammo)
 {
-reload();
+reload_weapon();
 }
 if(health<=0)
 {
@@ -267,13 +267,13 @@ mainmenu();
 }
 if(key_pressed(KEY_ESCAPE))
 {
-fade_pool(p,2,-30);
+fade_pool(pool,2,-30);
 destroygame();
 mainmenu();
 }
 }
 }
-void draw(string weaponname,string drawsound,int wep_damage,int wep_range,int wep_maxammo,bool melee)
+void draw_weapon(string weaponname,string drawsound,int wep_damage,int wep_range,int wep_maxammo,bool melee)
 {
 weapon=weaponname;
 wepdamage=wep_damage;
@@ -288,18 +288,18 @@ if(melee==true)
 is_melee=true;
 maxammo=0;
 }
-p.play_stationary("sounds/sfx/misc/change_weapon.ogg",false);
+pool.play_stationary("sounds/sfx/misc/change_weapon.ogg",false);
 if(wep_maxammo<loadedammo)
 {
 loadedammo=wep_maxammo;
 }
-p.play_stationary(drawsound,false);
+pool.play_stationary(drawsound,false);
 }
-void reload()
+void reload_weapon()
 {
 if(wepammo<=0)
 {
-p.play_stationary("sounds/sfx/weapons/"+weapon+"empty.ogg",false);
+pool.play_stationary("sounds/sfx/weapons/"+weapon+"empty.ogg",false);
 }
 else
 {
@@ -321,7 +321,7 @@ wepammo-=am;
 dlgplay("sounds/sfx/weapons/"+weapon+"reload.ogg", false, false);
 }
 }
-void fire(string direction)
+void fire_weapon(string direction)
 {
 if(direction=="left")
 {
@@ -330,11 +330,11 @@ if(weapon==""==false and firetimer.elapsed>=firetime and fireable==true)
 firetimer.restart();
 if(loadedammo==0 and is_melee==false)
 {
-p.play_stationary_extended("sounds/sfx/weapons/"+weapon+"empty.ogg",false,0,-50,0,100,false);
+pool.play_stationary_extended("sounds/sfx/weapons/"+weapon+"empty.ogg",false,0,-50,0,100,false);
 }
 else
 {
-p.play_stationary_extended("sounds/sfx/weapons/"+weapon+"fire.ogg",false,0,-50,0,100,false);
+pool.play_stationary_extended("sounds/sfx/weapons/"+weapon+"fire.ogg",false,0,-50,0,100,false);
 spawn_bullet(x, y, wepdamage, weprange, 50, "sounds/sfx/weapons/"+weapon+"hit.ogg", direction);
 if(is_melee==false)
 {
@@ -350,11 +350,11 @@ if(weapon==""==false and firetimer.elapsed>=firetime and fireable==true)
 firetimer.restart();
 if(loadedammo==0 and is_melee==false)
 {
-p.play_stationary_extended("sounds/sfx/weapons/"+weapon+"empty.ogg",false,0,50,0,100,false);
+pool.play_stationary_extended("sounds/sfx/weapons/"+weapon+"empty.ogg",false,0,50,0,100,false);
 }
 else
 {
-p.play_stationary_extended("sounds/sfx/weapons/"+weapon+"fire.ogg",false,0,50,0,100,false);
+pool.play_stationary_extended("sounds/sfx/weapons/"+weapon+"fire.ogg",false,0,50,0,100,false);
 spawn_bullet(x, y, wepdamage, weprange, 50, "sounds/sfx/weapons/"+weapon+"hit.ogg", direction);
 if(is_melee==false)
 {
@@ -370,11 +370,11 @@ if(weapon==""==false and firetimer.elapsed>=firetime and fireable==true)
 firetimer.restart();
 if(loadedammo==0 and is_melee==false)
 {
-p.play_stationary_extended("sounds/sfx/weapons/"+weapon+"empty.ogg",false,0,0,0,100,false);
+pool.play_stationary_extended("sounds/sfx/weapons/"+weapon+"empty.ogg",false,0,0,0,100,false);
 }
 else
 {
-p.play_stationary_extended("sounds/sfx/weapons/"+weapon+"fire.ogg",false,0,0,0,100,false);
+pool.play_stationary_extended("sounds/sfx/weapons/"+weapon+"fire.ogg",false,0,0,0,100,false);
 spawn_bullet(x, y, wepdamage, weprange, 50, "sounds/sfx/weapons/"+weapon+"hit.ogg", direction);
 if(is_melee==false)
 {
@@ -422,20 +422,20 @@ spawn_source("sounds/sfx/misc/bgm_forest_amb.ogg");
 while(true)
 {
 wait(5);
-p.update_listener_2d(x, y);
+pool.update_listener_2d(x, y);
 bulletloop();
 sorceloop();
 zombloop();
 if(zombsptimer.elapsed>=zombsptime and zombies.length()<zombnum)
 {
-spawn_zombie(0, 20, 30, 1, 2000, "normalforest1");
+spawn_zombie(0, 20, 30, 1, 1000, "normalforest1");
 zombsptimer.restart();
 }
 if(breathtimer.elapsed>=breathtime)
 {
 if(health==5||health==6)
 {
-p.play_stationary("sounds/sfx/misc/player_breath_1.ogg", false);
+pool.play_stationary("sounds/sfx/misc/player_breath_1.ogg", false);
 breathtimer.restart();
 }
 }
@@ -443,7 +443,7 @@ if(breathtimer.elapsed>=breathtime)
 {
 if(health==3||health==4)
 {
-p.play_stationary("sounds/sfx/misc/player_breath_2.ogg", false);
+pool.play_stationary("sounds/sfx/misc/player_breath_2.ogg", false);
 breathtimer.restart();
 }
 }
@@ -451,7 +451,7 @@ if(breathtimer.elapsed>=breathtime)
 {
 if(health==1||health==2)
 {
-p.play_stationary("sounds/sfx/misc/player_breath_3.ogg", false);
+pool.play_stationary("sounds/sfx/misc/player_breath_3.ogg", false);
 breathtimer.restart();
 }
 }
@@ -477,59 +477,59 @@ breathtime=1000;
 }
 if(key_pressed(KEY_1) and weapon!="knife")
 {
-draw("knife", "sounds/speech/weapons/knife.ogg", 10, 1, 0, true);
+draw_weapon("knife", "sounds/speech/weapons/knife.ogg", 10, 1, 0, true);
 }
 if(key_pressed(KEY_2) and weapon!="sword")
 {
-draw("sword", "sounds/speech/weapons/japanese sword.ogg", 20, 1, 0, true);
+draw_weapon("sword", "sounds/speech/weapons/japanese sword.ogg", 20, 1, 0, true);
 }
 if(key_pressed(KEY_3) and weapon!="saw")
 {
-draw("saw", "sounds/speech/weapons/power saw.ogg", 50, 1, 0, true);
+draw_weapon("saw", "sounds/speech/weapons/power saw.ogg", 50, 1, 0, true);
 }
 if(key_pressed(KEY_4) and weapon!="grenade")
 {
-draw("grenade", "sounds/speech/weapons/grenade.ogg", 250, 1, 3, false);
+draw_weapon("grenade", "sounds/speech/weapons/grenade.ogg", 250, 1, 3, false);
 }
 if(key_pressed(KEY_5) and weapon!="colt")
 {
-draw("colt", "sounds/speech/weapons/colt.ogg", 30, 1, 5, false);
+draw_weapon("colt", "sounds/speech/weapons/colt.ogg", 30, 1, 5, false);
 }
 if(key_pressed(KEY_6) and weapon!="shotgun")
 {
-draw("shotgun", "sounds/speech/weapons/shotgun.ogg", 60, 1, 10, false);
+draw_weapon("shotgun", "sounds/speech/weapons/shotgun.ogg", 60, 1, 10, false);
 }
 if(key_pressed(KEY_7) and weapon!="m4a1")
 {
-draw("m4a1", "sounds/speech/weapons/m4a1.ogg", 90, 1, 15, false);
+draw_weapon("m4a1", "sounds/speech/weapons/m4a1.ogg", 90, 1, 15, false);
 }
 if(key_pressed(KEY_8) and weapon!="ak47")
 {
-draw("ak47", "sounds/speech/weapons/ak47.ogg", 120, 1, 20, false);
+draw_weapon("ak47", "sounds/speech/weapons/ak47.ogg", 120, 1, 20, false);
 }
 if(key_pressed(KEY_9) and weapon!="mg80")
 {
-draw("mg80", "sounds/speech/weapons/mg80.ogg", 150, 1, 25, false);
+draw_weapon("mg80", "sounds/speech/weapons/mg80.ogg", 150, 1, 25, false);
 }
 if(key_pressed(KEY_LEFT))
 {
-fire("left");
+fire_weapon("left");
 }
 if(key_pressed(KEY_RIGHT))
 {
-fire("right");
+fire_weapon("right");
 }
 if(key_pressed(KEY_UP))
 {
-fire("forward");
+fire_weapon("forward");
 }
 if(key_pressed(KEY_DOWN) and is_melee==false and loadedammo<maxammo)
 {
-reload();
+reload_weapon();
 }
 if(key_pressed(KEY_ESCAPE))
 {
-fade_pool(p,2,-30);
+fade_pool(pool,2,-30);
 mainmenu();
 }
 }
