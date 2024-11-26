@@ -6,7 +6,6 @@
 #include"fadepool.nvgt"
 #include"key_hold.nvgt"
 #include"m_pro.nvgt"
-#include"savedata.nvgt"
 #include"sound_pool.nvgt"
 #include"speech.nvgt"
 #include"src.nvgt"

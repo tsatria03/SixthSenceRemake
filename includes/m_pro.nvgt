@@ -224,18 +224,6 @@ break;
 }
 }
 }
-/*if(speech_output==0 and has_tts_items==true)
-{
-if(@tts_handle==null)
-{
-tts_voice temp_voice;
-@internal_tts=temp_voice;
-}
-else
-{
-@internal_tts=tts_handle;
-}
-}*/
 if(intro != "") {
 if(is_intro_tts == true) {
 if(speech_output > 0 and speech_output < 5) {
@@ -607,9 +595,21 @@ return menu_position;
 }
 }
 }
-if(key_pressed(KEY_TAB))
-{
-speak(intro);
+if (key_pressed(KEY_TAB)) {
+    if (is_intro_tts == true) {
+        if (speech_output > 0 && speech_output < 5) {
+            screen_reader_speak_interrupt(speech_output, intro);
+        } else if (force_sapi == false) {
+            tts.stop();
+            speak(intro);
+        } else {
+            internal_tts.speak_interrupt(intro);
+        }
+    } else {
+        if (internal_sound.load(fn(intro), @spool.pack_file)) {
+            internal_sound.play();
+        }
+    }
 }
 if(allow_escape == true) {
 if(key_pressed(KEY_ESCAPE)) {

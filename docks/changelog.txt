@@ -1,0 +1,3 @@
+new in 1.0
+Added HRTF support for spacial awareness.
+Minor bug fixes and code enhancements.
