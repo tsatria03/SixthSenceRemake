@@ -62,8 +62,8 @@ for(uint z=0; z<zombies.length(); z++)
 if(zombies[z].zombx==bullets[i].x and zombies[z].zomby==bullets[i].y)
 {
 pool.play_2d(bullets[i].hitsound,0,0,bullets[i].x,bullets[i].y,false);
-string[] hurtsfx=find_files("sounds/sfx/zombies/"+zombies[z].zombtype+"/*hurt*");
-if(hurtsfx.length()!=0) zombies[z].hurtsound=pool.play_2d("sounds/sfx/zombies/"+zombies[z].zombtype+"/"+hurtsfx[random(0,hurtsfx.length()-1)],0,0,zombies[z].zombx,zombies[z].zomby,false);
+string[] hurtsfx=find_files("sounds/sfx/zombies/normal/"+zombies[z].zombtype+"/*hurt*");
+if(hurtsfx.length()!=0) zombies[z].hurtsound=pool.play_2d("sounds/sfx/zombies/normal/"+zombies[z].zombtype+"/"+hurtsfx[random(0,hurtsfx.length()-1)],0,0,zombies[z].zombx,zombies[z].zomby,false);
 zombies[z].health-=bullets[i].damage;
 bullets.remove_at(i);
 return;

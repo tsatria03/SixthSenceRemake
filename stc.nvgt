@@ -135,7 +135,7 @@ sorceloop();
 zombloop();
 if(zombsptimer.elapsed>=zombsptime and zombies.length()<zombnum)
 {
-string[] zombietype=find_directories("sounds/sfx/zombies/normalforest*");
+string[] zombietype=find_directories("sounds/sfx/zombies/normal/normalforest*");
 spawn_zb(random(1, 3), zombietype[random(0,zombietype.length()-1)]);
 zombsptimer.restart();
 }
